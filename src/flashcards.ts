@@ -59,12 +59,13 @@ export class Flashcards {
         try {
             let deckTitle = await this.selectDeck();
             this.deleteDeck(deckTitle);
+            vscode.window.showInformationMessage(`Deck: "${deckTitle}" is successfully deleted`);
         } catch (error) {
             this.handleError(error);            
         }
     }
 
-    public async selectDeck() {
+    private async selectDeck() {
         let deckTitle = await this.selectDeckTitle();
         if ( !deckTitle ) {
             console.log("Deck is not selected");
@@ -93,14 +94,14 @@ export class Flashcards {
 		return deckTitles;
     }
     
-    public async loadDeck(deckTitle: string | undefined) {
+    private async loadDeck(deckTitle: string | undefined) {
         if (!deckTitle) {
             throw new Error('Wow!!');
         }
         await this._loadDeck(deckTitle);
     }
 
-    public startFlashcards(): void {
+    private startFlashcards(): void {
         this.giveQuestion();
     }
     
@@ -190,7 +191,7 @@ export class Flashcards {
         }
     }
     
-    public async inputDeckTitle() {
+    private async inputDeckTitle() {
         let deckTitle = await vscode.window.showInputBox(
             {
                 placeHolder: 'Title of New Deck'
@@ -203,7 +204,7 @@ export class Flashcards {
         return deckTitle;
     }
     
-    public createDeck(deckTitle: string) {
+    private createDeck(deckTitle: string) {
         let newFilePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
 		if (fs.existsSync(newFilePath)) {
             throw Error(`Flashcard: ${deckTitle} already exists`);
@@ -218,7 +219,7 @@ export class Flashcards {
         }
     }
 
-    public async openDeck(deckTitle: string) {
+    private async openDeck(deckTitle: string) {
         let filePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
 		if (!fs.existsSync(filePath)) {
 			throw Error(`Flashcard: ${deckTitle} doesn't exists`);
@@ -230,14 +231,13 @@ export class Flashcards {
 		vscode.window.showTextDocument(doc);
 	}
 
-    public async deleteDeck(deckTitle: string) {
+    private async deleteDeck(deckTitle: string) {
         let filePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
 		if (!fs.existsSync(filePath)) {
 			throw Error(`Flashcard: ${deckTitle} doesn't exists`);
         }
         
         fs.unlinkSync(filePath);
-        vscode.window.showInformationMessage(`Deck: ${deckTitle} is successfully deleted`);
 	}
 
 }
