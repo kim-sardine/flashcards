@@ -32,6 +32,25 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"configuration": {
+			"title": "Flashcards",
+			"properties": {
+				"flashcards.separator": {
+					"type": "string",
+					"default": "Tab",
+					"enum": [
+						"Space",
+						"Comma",
+						"Double #"
+					],
+					"enumDescriptions": [
+						"Qusetion Answer",
+						"Qusetion,Answer",
+						"Qusetion##Answer"
+					]
+				}
+			}
+		},
 		"commands": [
 			{
 				"command": "flashcards.show-start-modal",

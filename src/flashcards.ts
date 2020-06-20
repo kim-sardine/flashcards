@@ -12,6 +12,7 @@ export class Flashcards {
 
 	private flashcardsRootPath: string;
     private trainingDataRootPath: string;
+    private separator: string = '';
     
     private currentDeck: Flashcard[] = [];
 
@@ -19,14 +20,10 @@ export class Flashcards {
         this.flashcardsRootPath = `${context.globalStoragePath}/flashcards`;
         this.trainingDataRootPath = `${context.globalStoragePath}/training_data`;
 
-        this.init();
+        this.updateSeparator();
     }
     
-    private init(): void {
-
-    }
-
-    public async cmdSelectDeck() {
+    public async cmdStartFlashcards() {
         try {
             let deckTitle = await this.selectDeck();
             await this.loadDeck(deckTitle);
@@ -93,13 +90,6 @@ export class Flashcards {
 					.map((title) => title.substr(0, title.length - constants.FLASHCARD_FILE_EXTENSION.length - 1));
 		return deckTitles;
     }
-    
-    private async loadDeck(deckTitle: string | undefined) {
-        if (!deckTitle) {
-            throw new Error('Wow!!');
-        }
-        await this._loadDeck(deckTitle);
-    }
 
     private startFlashcards(): void {
         this.giveQuestion();
@@ -143,9 +133,26 @@ export class Flashcards {
     private getRandomFlashcard(): Flashcard {
 		let randomIdx = Math.floor(Math.random() * this.currentDeck.length);
 		return this.currentDeck[randomIdx];
-	}
+    }
+    
+    public updateSeparator(): void {
+        let separatorString: string = vscode.workspace.getConfiguration(constants.EXTENSION_ID).get("separator", constants.SEPARATOR_COMMA);
+        this.setSeparator(separatorString);
+    }
+    
+    private setSeparator(separatorString: string): void {
+        let separator = ','; // Default: COMMA
+        if (separatorString === constants.SEPARATOR_SPACE) {
+            separator = ' ';
+        } 
+        else if (separatorString === constants.SEPARATOR_DOUBLE_NUMBER_SIGN) {
+            separator = '##';
+        }
 
-    private async _loadDeck(deckTitle: string) {
+        this.separator = separator;
+    }
+
+    private async loadDeck(deckTitle: string) {
 		let filePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
 		const fileStream = fs.createReadStream(filePath);
 		const rl = readline.createInterface({
@@ -154,38 +161,26 @@ export class Flashcards {
 		});
 
         this.currentDeck = [];
+        let wrongLineNumbers: number[] = [];
+        let lineNumber: number = 0;
 		for await (const line of rl) {
-			let qna = line.split("##");
-			if (qna.length === 2) {
+            lineNumber++;
+            let qna = line.split(this.separator);
+			if (qna.length >= 2) {
 				this.currentDeck.push({
 					question: qna[0],
-					answer: qna[1]
+					answer: qna.slice(1).join(this.separator)
 				});
 			}
 			else {
-				let fillInBlank = line.split("$$");
-				if (fillInBlank.length % 2 === 1 && fillInBlank.length >= 3) {
-					let text: string[] = [];
-					for (let i = 0; i < fillInBlank.length; i++) {
-						if (i % 2 === 1) {
-							text.push('___');
-						}
-						else {
-							text.push(fillInBlank[i]);
-						}
-					}
-					this.currentDeck.push({
-						question: text.join(""),
-						answer: fillInBlank.join("")
-					});
-				}
-				else {
-					vscode.window.showWarningMessage(`Invalid data in your flashcards : ${line}`);
-					return;
-				}
+                wrongLineNumbers.push(lineNumber);
 			}		
         }
         
+        if (wrongLineNumbers.length > 0) {
+            vscode.window.showWarningMessage(`Invalid contents in "${deckTitle}".  line number : [${wrongLineNumbers.join(', ')}]`);
+        }
+
         if (this.currentDeck.length === 0) {
             throw new Error(`Deck : "${deckTitle}" doesn't have any content`);
         }
@@ -198,7 +193,8 @@ export class Flashcards {
             }
         );
         if (!deckTitle) {
-            throw Error('Invalid title');
+            console.log(`Invalid deck title: "${deckTitle}"`);
+            throw Error();
         }
 
         return deckTitle;
@@ -210,10 +206,9 @@ export class Flashcards {
             throw Error(`Flashcard: ${deckTitle} already exists`);
 		}
 
-        let content = "Question##Answer";
-
+        let sampleContents = ["Question #1", "Answer #1"].join(this.separator);
         try {
-            fs.writeFileSync(newFilePath, content);
+            fs.writeFileSync(newFilePath, sampleContents);
         } catch (error) {
             throw Error(`The file "${newFilePath}" couldn't be created: ${error}`);
         }

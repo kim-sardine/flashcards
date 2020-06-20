@@ -49,7 +49,7 @@ function registerCommand(context: vscode.ExtensionContext, fcs: Flashcards): voi
 			constants.MODAL_MENU_DELETE_DECK,
 		).then(selection => {
 			if (selection === constants.MODAL_MENU_START_FLASHCARD) {
-				fcs.cmdSelectDeck();
+				fcs.cmdStartFlashcards();
 			} else if (selection === constants.MODAL_MENU_CREATE_NEW_DECK) {
 				fcs.cmdCreateNewDeck();
 			} else if (selection === constants.MODAL_MENU_UPDATE_DECK) {
@@ -58,7 +58,14 @@ function registerCommand(context: vscode.ExtensionContext, fcs: Flashcards): voi
 				fcs.cmdDeleteDeck();
 			}
 		});
-    }));
+	}));
+	
+	
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration((event) => {
+		if (event.affectsConfiguration(constants.SETTING_SEPARATOR)) {
+			fcs.updateSeparator();
+		}
+	}));
 }
 
 export function deactivate() {}
