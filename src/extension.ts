@@ -59,37 +59,6 @@ function registerCommand(context: vscode.ExtensionContext, fcs: Flashcards): voi
 			}
 		});
     }));
-
-	// context.subscriptions.push(vscode.commands.registerCommand(constants.CMD_SHOW_QUOTE_ON_MODAL, () => {
-    //     fcs.giveQuestion();
-    // }));
-
-	// context.subscriptions.push(
-    //     vscode.commands.registerCommand(constants.CMD_CREATE_FLASHCARD, async () => {
-    //         let title = await vscode.window.showInputBox(
-    //             {
-    //                 placeHolder: 'Title of new flashcard'
-    //             }
-    //         );
-    //         if (!title) {
-    //             vscode.window.showWarningMessage('Invalid title');
-    //             return; 
-    //         }
-    //         fcs.createFlashcard(title);
-    //         fcs.openFlashcard(title);
-    //     })
-    // );
-
-	// context.subscriptions.push(
-    //     vscode.commands.registerCommand(constants.CMD_SELECT_FLASHCARD, async () => {
-    //         let title = await fcs.selectFlashcardTitle();
-    //         if (title) {
-    //             fcs.loadDeck(title);
-    //             fcs.updateDisplay();
-    //         }
-    //     })
-    // );
 }
-
 
 export function deactivate() {}

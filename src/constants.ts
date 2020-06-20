@@ -16,9 +16,9 @@ export const MODAL_MENU_CREATE_NEW_DECK: string = 'Create New Deck';
 export const MODAL_MENU_UPDATE_DECK: string = 'Update Deck';
 export const MODAL_MENU_DELETE_DECK: string = 'Delete Deck';
 
-export const MODAL_OPTION_SHOW_ANSWER: string = 'SHOW_ANSWER';
-export const MODAL_OPTION_ANSWER_EASY: string = 'EASY';
-export const MODAL_OPTION_ANSWER_GOOD: string = 'GOOD';
-export const MODAL_OPTION_ANSWER_HARD: string = 'HARD';
+export const MODAL_OPTION_SHOW_ANSWER: string = 'See Answer';
+export const MODAL_OPTION_ANSWER_EASY: string = 'Easy';
+export const MODAL_OPTION_ANSWER_GOOD: string = 'Good';
+export const MODAL_OPTION_ANSWER_HARD: string = 'Hard';
 
 export const FLASHCARD_FILE_EXTENSION: string = 'flashcard';
