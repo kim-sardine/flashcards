@@ -8,17 +8,29 @@ export interface Flashcard {
 	answer: string;
 }
 
+/*
+{
+    // Training Data
+    "traning-data" : [
+        {
+            "question": "Question",
+            "level": 1~10
+        }
+    ]
+}
+*/
+
 export class Flashcards {
 
-	private flashcardsRootPath: string;
+	private deckRootPath: string;
     private trainingDataRootPath: string;
     private separator: string = '';
     
     private currentDeck: Flashcard[] = [];
 
-    constructor(context: vscode.ExtensionContext) {
-        this.flashcardsRootPath = `${context.globalStoragePath}/flashcards`;
-        this.trainingDataRootPath = `${context.globalStoragePath}/training_data`;
+    constructor(deckRootPath: string, trainingDataRootPath: string) {
+        this.deckRootPath = deckRootPath;
+        this.trainingDataRootPath = trainingDataRootPath;
 
         this.updateSeparator();
     }
@@ -71,6 +83,15 @@ export class Flashcards {
         return deckTitle;
     }
 
+    private getDeckFilePath(deckTitle: string): string {
+        return `${this.deckRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
+
+    }
+    private getTrainingDataFilePath(deckTitle: string): string {
+        return `${this.trainingDataRootPath}/${deckTitle}.${constants.TRANING_DATA_FILE_EXTENSION}`;
+
+    }
+
     private handleError(error: any) {
         if (error.message) {
             vscode.window.showWarningMessage(error.message);
@@ -85,10 +106,10 @@ export class Flashcards {
 
 		let deckTitle = await vscode.window.showQuickPick(deckTitles, { placeHolder: "Select Flashcard" });
 		return deckTitle;
-	}
+    }
 
     private getAllDeckTitles(): string[] {
-		let deckTitles = fs.readdirSync(this.flashcardsRootPath);
+		let deckTitles = fs.readdirSync(this.deckRootPath);
 		deckTitles = deckTitles
 					.filter((title) => title.endsWith(`.${constants.FLASHCARD_FILE_EXTENSION}`))
 					.map((title) => title.substr(0, title.length - constants.FLASHCARD_FILE_EXTENSION.length - 1));
@@ -120,7 +141,9 @@ export class Flashcards {
 			if (selection === constants.MODAL_OPTION_ANSWER_HARD) {
 			} else if (selection === constants.MODAL_OPTION_ANSWER_GOOD) {
 			} else if (selection === constants.MODAL_OPTION_ANSWER_EASY) {
-			}
+            }
+            // update training data (mem)
+            // overwrite training data (file)
 			this.giveQuestion();
 		});
 	}
@@ -157,8 +180,9 @@ export class Flashcards {
     }
 
     private async loadDeck(deckTitle: string) {
-		let filePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
-		const fileStream = fs.createReadStream(filePath);
+        // Load Deck
+		let deckFilePath = this.getDeckFilePath(deckTitle);
+		const fileStream = fs.createReadStream(deckFilePath);
 		const rl = readline.createInterface({
 		  input: fileStream,
 		  crlfDelay: Infinity
@@ -188,6 +212,8 @@ export class Flashcards {
         if (this.currentDeck.length === 0) {
             throw new Error(`Deck : "${deckTitle}" doesn't have any content`);
         }
+
+        // Load traning data
     }
     
     private async inputDeckTitle() {
@@ -205,38 +231,53 @@ export class Flashcards {
     }
     
     private createDeck(deckTitle: string) {
-        let newFilePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
-		if (fs.existsSync(newFilePath)) {
+        // Create Deck file
+        let newDeckFilePath = this.getDeckFilePath(deckTitle);
+        
+        if (fs.existsSync(newDeckFilePath)) {
             throw Error(`Flashcard: ${deckTitle} already exists`);
 		}
-
+        
         let sampleContents = ["First_Question", "First_Answer"].join(this.separator);
         try {
-            fs.writeFileSync(newFilePath, sampleContents);
+            fs.writeFileSync(newDeckFilePath, sampleContents);
         } catch (error) {
-            throw Error(`The file "${newFilePath}" couldn't be created: ${error}`);
+            throw Error(`The file "${newDeckFilePath}" couldn't be created: ${error}`);
+        }
+        
+        // Create Training Data
+        let newTrainingDataPath = this.getTrainingDataFilePath(deckTitle);
+        try {
+            fs.closeSync(fs.openSync(newTrainingDataPath, 'w')); // Reset file if only training data exists
+        } catch (error) {
+            throw Error(`The file "${newTrainingDataPath}" couldn't be created: ${error}`);
         }
     }
 
     private async openDeck(deckTitle: string) {
-        let filePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
-		if (!fs.existsSync(filePath)) {
+        let deckFilePath = this.getDeckFilePath(deckTitle);
+		if (!fs.existsSync(deckFilePath)) {
 			throw Error(`Flashcard: ${deckTitle} doesn't exists`);
 		}
 
         const doc = await vscode.workspace.openTextDocument(
-			vscode.Uri.file(filePath)
+			vscode.Uri.file(deckFilePath)
 		);
 		vscode.window.showTextDocument(doc);
 	}
 
     private async deleteDeck(deckTitle: string) {
-        let filePath = `${this.flashcardsRootPath}/${deckTitle}.${constants.FLASHCARD_FILE_EXTENSION}`;
-		if (!fs.existsSync(filePath)) {
-			throw Error(`Flashcard: ${deckTitle} doesn't exists`);
+        // Delete Deck
+        let deckFilePath = this.getDeckFilePath(deckTitle);
+        if (!fs.existsSync(deckFilePath)) {
+            throw Error(`Flashcard: ${deckTitle} doesn't exists`);
         }
-        
-        fs.unlinkSync(filePath);
+        fs.unlinkSync(deckFilePath);
+
+
+        // Delete Traning Data
+        let newTrainingDataPath = this.getTrainingDataFilePath(deckTitle);
+        fs.unlinkSync(newTrainingDataPath);
 	}
 
 }

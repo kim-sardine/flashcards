@@ -11,32 +11,31 @@ import { Flashcard, Flashcards } from './flashcards';
  */
 
 export function activate(context: vscode.ExtensionContext) {
-    initExtension(context);
+	let deckRootPath = `${context.globalStoragePath}/${constants.DECK_ROOT_DIR_NAME}`;
+	let trainingDataRootPath = `${context.globalStoragePath}/${constants.TRAINING_DATA_ROOT_DIR_NAME}`;
 
-	const fcs = new Flashcards(context);
+	initExtension(deckRootPath, trainingDataRootPath);
+
+	const fcs = new Flashcards(deckRootPath, trainingDataRootPath);
 
 	registerCommand(context, fcs);
-}
 
-
-function initExtension(context: vscode.ExtensionContext): void {
-    //// Create the defaultNotesRootDirectory only once
-    let flashcardsRootPath = `${context.globalStoragePath}/flashcards`;
-    let trainingDataRootPath = `${context.globalStoragePath}/training_data`;
-
-	if (!fs.existsSync(flashcardsRootPath)){
-        fs.mkdirSync(flashcardsRootPath, { recursive: true });
-    }
-    if (!fs.existsSync(trainingDataRootPath)){
-        fs.mkdirSync(trainingDataRootPath, { recursive: true });
-	}
-	
 	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	statusBarItem.text = "Flashcards";
 	statusBarItem.tooltip = "Click to start flashcards";
 	statusBarItem.command = constants.CMD_SHOW_START_MODAL;
 	statusBarItem.show();
 	context.subscriptions.push(statusBarItem);
+}
+
+
+function initExtension(deckRootPath: string, trainingDataRootPath: string): void {
+	if (!fs.existsSync(deckRootPath)){
+        fs.mkdirSync(deckRootPath, { recursive: true });
+    }
+    if (!fs.existsSync(trainingDataRootPath)){
+        fs.mkdirSync(trainingDataRootPath, { recursive: true });
+	}
 }
 
 
