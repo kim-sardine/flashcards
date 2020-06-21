@@ -6,6 +6,10 @@ export const TRANING_DATA_FILE_EXTENSION: string = 'json';
 export const DECK_ROOT_DIR_NAME: string = 'decks';
 export const TRAINING_DATA_ROOT_DIR_NAME: string = 'training_datas';
 
+export const TRAINING_DATA_MAXIMUM_LEVEL: number = 10;
+export const TRAINING_DATA_MINIMUM_LEVEL: number = 1;
+export const TRAINING_DATA_DEFAULT_LEVEL: number = 5;
+
 export const CMD_SHOW_START_MODAL: string = `${EXTENSION_ID}.show-start-modal`;
 export const CMD_SHOW_QUOTE_ON_MODAL: string = `${EXTENSION_ID}.show-quote-on-modal`;
 export const CMD_CREATE_FLASHCARD: string = `${EXTENSION_ID}.create-flashcard`;

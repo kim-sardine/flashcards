@@ -3,7 +3,7 @@
 	"displayName": "Flashcards",
 	"description": "Flashcards will set you free",
 	"icon": "assets/flashcards.png",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"publisher": "kim-sardine",
 	"engines": {
 		"vscode": "^1.44.0"
@@ -37,7 +37,7 @@
 			"properties": {
 				"flashcards.separator": {
 					"type": "string",
-					"default": "Tab",
+					"default": "Comma",
 					"enum": [
 						"Space",
 						"Comma",
@@ -50,24 +50,7 @@
 					]
 				}
 			}
-		},
-		"commands": [
-			{
-				"command": "flashcards.show-start-modal",
-				"title": "Change language",
-				"category": "Flashcards"
-			},
-			{
-				"command": "flashcards.change-category",
-				"title": "Change category",
-				"category": "Flashcards"
-			},
-			{
-				"command": "flashcards.change-display-seconds",
-				"title": "Change display seconds",
-				"category": "Flashcards"
-			}
-		]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

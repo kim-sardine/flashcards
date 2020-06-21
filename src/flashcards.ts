@@ -3,20 +3,19 @@ import * as constants from './constants';
 import * as fs from "fs";
 import * as readline from "readline";
 
-export interface Flashcard {
+interface Flashcard {
 	question: string;
 	answer: string;
 }
 
+interface TraningData {
+	question: string;
+	level: number;
+}
+
 /*
 {
-    // Training Data
-    "traning-data" : [
-        {
-            "question": "Question",
-            "level": 1~10
-        }
-    ]
+    "Encoded Question string" : 1~10
 }
 */
 
@@ -27,6 +26,8 @@ export class Flashcards {
     private separator: string = '';
     
     private currentDeck: Flashcard[] = [];
+    private currentTitle: string = '';
+    private currentTrainingData: any;
 
     constructor(deckRootPath: string, trainingDataRootPath: string) {
         this.deckRootPath = deckRootPath;
@@ -38,7 +39,7 @@ export class Flashcards {
     public async cmdStartFlashcards() {
         try {
             let deckTitle = await this.selectDeck();
-            await this.loadDeck(deckTitle);
+            await this.loadFlashcards(deckTitle);
             this.startFlashcards();
         } catch (error) {
             this.handleError(error);
@@ -139,26 +140,85 @@ export class Flashcards {
 			constants.MODAL_OPTION_ANSWER_EASY,
 		).then(selection => {
 			if (selection === constants.MODAL_OPTION_ANSWER_HARD) {
+                this.changeTrainingLevel(flashcard, 3);
 			} else if (selection === constants.MODAL_OPTION_ANSWER_GOOD) {
+                this.changeTrainingLevel(flashcard, 0);
 			} else if (selection === constants.MODAL_OPTION_ANSWER_EASY) {
+                this.changeTrainingLevel(flashcard, -2);
             }
-            // update training data (mem)
-            // overwrite training data (file)
 			this.giveQuestion();
 		});
-	}
-
-    private getNextFlashcard(): Flashcard {
-        // FIXME: Load by training data
-        let flashcard = this.getRandomFlashcard();
-        if (!flashcard) {
-            throw new Error("Can't get flashcard");
+    }
+    
+    private changeTrainingLevel(flashcard:Flashcard, diff: number): void {
+        let encodedQuestion = encodeURI(flashcard.question);
+        let level: number = constants.TRAINING_DATA_DEFAULT_LEVEL;
+        if (this.currentTrainingData[encodedQuestion]) {
+            level = this.currentTrainingData[encodedQuestion];
+            if (level + diff > constants.TRAINING_DATA_MAXIMUM_LEVEL) {
+                level = constants.TRAINING_DATA_MAXIMUM_LEVEL;
+            }
+            else if (level + diff < constants.TRAINING_DATA_MINIMUM_LEVEL) {
+                level = constants.TRAINING_DATA_MINIMUM_LEVEL;
+            }
+            else {
+                level = level + diff;
+            }
         }
-        return flashcard;
-	}
+        this.currentTrainingData[encodedQuestion] = level;
+        this.saveCurrentTraningData();
+    }
+
+    private saveCurrentTraningData() {
+        let stringifiedTrainingData = JSON.stringify(this.currentTrainingData);
+        let trainingDataPath = this.getTrainingDataFilePath(this.currentTitle);
+        try {
+            fs.writeFileSync(trainingDataPath, stringifiedTrainingData);
+        } catch (error) {
+            throw Error(`The file "${trainingDataPath}" couldn't be saved: ${error}`);
+        }
+    }
+
+    
+    private getNextFlashcard(): Flashcard {
+
+        let encodedQuestion = this.getRandomFlashcardByTrainingData();
+        if (!encodedQuestion) {
+            return this.getRandomFlashcard();
+        }
+        else {
+            for (let i = 0; i < this.currentDeck.length; i++) {
+                if (encodeURI(this.currentDeck[i].question) === encodedQuestion) {
+                    return this.currentDeck[i];
+                }                
+            }
+        }
+        return this.getRandomFlashcard();
+        
+    }
+
+    private getRandomFlashcardByTrainingData(): string | undefined {
+        let totalLevel = 1;
+
+        for (let encodedQuestion in this.currentTrainingData) {
+            totalLevel += this.currentTrainingData[encodedQuestion];
+        }
+
+        
+        const threshold = Math.floor(Math.random() * totalLevel);
+        
+        let total = 0;
+        for (let encodedQuestion in this.currentTrainingData) {
+            total += this.currentTrainingData[encodedQuestion];
+        
+            if (total >= threshold) {
+                return encodedQuestion;
+            }
+        }
+    }
 
     private getRandomFlashcard(): Flashcard {
-		let randomIdx = Math.floor(Math.random() * this.currentDeck.length);
+        let randomIdx = Math.floor(Math.random() * this.currentDeck.length);
 		return this.currentDeck[randomIdx];
     }
     
@@ -179,43 +239,74 @@ export class Flashcards {
         this.separator = separator;
     }
 
-    private async loadDeck(deckTitle: string) {
+    private async loadFlashcards(deckTitle: string) {
         // Load Deck
-		let deckFilePath = this.getDeckFilePath(deckTitle);
-		const fileStream = fs.createReadStream(deckFilePath);
-		const rl = readline.createInterface({
-		  input: fileStream,
-		  crlfDelay: Infinity
-		});
+		await this.loadDeck(deckTitle);
+
+        // Load traning data
+        await this.loadTrainingData(deckTitle);
+    }
+    
+    private async loadDeck(deckTitle: string) {
+        let deckFilePath = this.getDeckFilePath(deckTitle);
+        const fileStream = fs.createReadStream(deckFilePath);
+        const rl = readline.createInterface({
+            input: fileStream,
+            crlfDelay: Infinity
+        });
 
         this.currentDeck = [];
         let wrongLineNumbers: number[] = [];
         let lineNumber: number = 0;
-		for await (const line of rl) {
+        for await (const line of rl) {
             lineNumber++;
             let qna = line.split(this.separator);
-			if (qna.length >= 2) {
-				this.currentDeck.push({
-					question: qna[0],
-					answer: qna.slice(1).join(this.separator)
-				});
-			}
-			else {
+            if (qna.length >= 2) {
+                this.currentDeck.push({
+                    question: qna[0],
+                    answer: qna.slice(1).join(this.separator)
+                });
+            }
+            else {
                 wrongLineNumbers.push(lineNumber);
-			}		
+            }
         }
-        
+
         if (wrongLineNumbers.length > 0) {
-            vscode.window.showWarningMessage(`Invalid contents in "${deckTitle}".  line number : [${wrongLineNumbers.join(', ')}]`);
+            vscode.window.showWarningMessage(`Invalid contents in Deck : "${deckTitle}".  line number : [${wrongLineNumbers.join(', ')}]`);
         }
 
         if (this.currentDeck.length === 0) {
             throw new Error(`Deck : "${deckTitle}" doesn't have any content`);
         }
 
-        // Load traning data
+        this.currentTitle = deckTitle;
     }
-    
+
+    private async loadTrainingData(deckTitle: string) {
+        // FIXME: What if file doesn't exist?
+        let trainingDataPath = this.getTrainingDataFilePath(deckTitle);
+        vscode.workspace.openTextDocument(trainingDataPath).then((document) => {
+            let text = document.getText();
+            try {
+                this.currentTrainingData = JSON.parse(text);
+                this.syncTrainingDataWithDeck();
+            } catch (error) {
+                throw Error(`Error getting training data: ${error}`);
+            }
+        });
+    }
+
+    private syncTrainingDataWithDeck() {
+        for (let i = 0; i < this.currentDeck.length; i++) {
+            let encodedQuestion = encodeURI(this.currentDeck[i].question);
+            if (!this.currentTrainingData[encodedQuestion]) {
+                this.currentTrainingData[encodedQuestion] = constants.TRAINING_DATA_DEFAULT_LEVEL;
+            }
+        }
+        this.saveCurrentTraningData();
+    }
+
     private async inputDeckTitle() {
         let deckTitle = await vscode.window.showInputBox(
             {
@@ -248,7 +339,7 @@ export class Flashcards {
         // Create Training Data
         let newTrainingDataPath = this.getTrainingDataFilePath(deckTitle);
         try {
-            fs.closeSync(fs.openSync(newTrainingDataPath, 'w')); // Reset file if only training data exists
+            fs.writeFileSync(newTrainingDataPath, "{}");
         } catch (error) {
             throw Error(`The file "${newTrainingDataPath}" couldn't be created: ${error}`);
         }
@@ -276,8 +367,8 @@ export class Flashcards {
 
 
         // Delete Traning Data
-        let newTrainingDataPath = this.getTrainingDataFilePath(deckTitle);
-        fs.unlinkSync(newTrainingDataPath);
+        let trainingDataPath = this.getTrainingDataFilePath(deckTitle);
+        fs.unlinkSync(trainingDataPath);
 	}
 
 }

@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as constants from './constants';
 import * as fs from "fs";
 
-import { Flashcard, Flashcards } from './flashcards';
+import { Flashcards } from './flashcards';
 
 /*****
  * 1. Manage flashcard data
@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCommand(context, fcs);
 
 	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-	statusBarItem.text = "Flashcards";
+	statusBarItem.text = "Flashcards!";
 	statusBarItem.tooltip = "Click to start flashcards";
 	statusBarItem.command = constants.CMD_SHOW_START_MODAL;
 	statusBarItem.show();
@@ -41,7 +41,7 @@ function initExtension(deckRootPath: string, trainingDataRootPath: string): void
 
 function registerCommand(context: vscode.ExtensionContext, fcs: Flashcards): void {
     context.subscriptions.push(vscode.commands.registerCommand(constants.CMD_SHOW_START_MODAL, () => {
-		vscode.window.showInformationMessage("Select menu",
+		vscode.window.showInformationMessage("Please select menu",
 			constants.MODAL_MENU_START_FLASHCARD,
 			constants.MODAL_MENU_CREATE_NEW_DECK,
 			constants.MODAL_MENU_UPDATE_DECK,
