@@ -6,7 +6,7 @@
 	"version": "0.1.0",
 	"publisher": "kim-sardine",
 	"engines": {
-		"vscode": "^1.44.0"
+		"vscode": "^1.46.0"
 	},
 	"categories": [
 		"Other"
