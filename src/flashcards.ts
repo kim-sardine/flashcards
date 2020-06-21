@@ -78,7 +78,11 @@ export class Flashcards {
     }
 
     private async selectDeckTitle() {
-		let deckTitles = this.getAllDeckTitles();
+        let deckTitles = this.getAllDeckTitles();
+        if (deckTitles.length === 0) {
+            throw new Error(`Please create new deck first.`);
+        }
+
 		let deckTitle = await vscode.window.showQuickPick(deckTitles, { placeHolder: "Select Flashcard" });
 		return deckTitle;
 	}
@@ -206,7 +210,7 @@ export class Flashcards {
             throw Error(`Flashcard: ${deckTitle} already exists`);
 		}
 
-        let sampleContents = ["Question #1", "Answer #1"].join(this.separator);
+        let sampleContents = ["First_Question", "First_Answer"].join(this.separator);
         try {
             fs.writeFileSync(newFilePath, sampleContents);
         } catch (error) {
