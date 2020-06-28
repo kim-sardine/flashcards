@@ -35,3 +35,6 @@ export const SEPARATOR_SPACE: string = 'Space';
 export const SEPARATOR_DOUBLE_NUMBER_SIGN: string = 'Double #';
 export const SEPARATOR_COMMA: string = 'Comma';
 
+export const TIMER_TIME_INTERVAL: number = 15;
+
+export const STATUS_BAR_DEFAULT_TEXT: string = 'Flashcards!';

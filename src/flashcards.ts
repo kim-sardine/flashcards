@@ -87,6 +87,22 @@ export class Flashcards {
         }
     }
 
+    public async getRandomQuestion() {
+        let deckTitles = this.getAllDeckTitles();
+        if (deckTitles.length > 0) {
+            let deckTitle = deckTitles[Math.floor(Math.random() * deckTitles.length)];
+            let deckFilePath = this.getDeckFilePath(deckTitle);
+            let result = await this.getFileByLines(deckFilePath);
+            if (result.deck.length > 0 ) {
+                let flashcard: Flashcard = result.deck[Math.floor(Math.random() * result.deck.length)];
+                return flashcard.question;
+            }
+        }
+
+        return '';
+
+    }
+
     private async selectDeck() {
         let deckTitle = await this.selectDeckTitle();
         if ( !deckTitle ) {
@@ -261,20 +277,35 @@ export class Flashcards {
     
     private async loadDeck(deckTitle: string) {
         let deckFilePath = this.getDeckFilePath(deckTitle);
-        const fileStream = fs.createReadStream(deckFilePath);
-        const rl = readline.createInterface({
+        let result = await this.getFileByLines(deckFilePath);
+
+        if (result.wrongLineNumbers.length > 0) {
+            vscode.window.showWarningMessage(`Invalid contents in Deck : "${deckTitle}".  line number : [${result.wrongLineNumbers.join(', ')}]`);
+        }
+
+        if (result.deck.length === 0) {
+            throw new Error(`Deck : "${deckTitle}" doesn't have any content`);
+        } else {
+            this.currentDeck = result.deck;
+            this.currentTitle = deckTitle;
+        }
+    }
+
+    private async getFileByLines(filePath: string) {
+        const fileStream = fs.createReadStream(filePath);
+        const lines = readline.createInterface({
             input: fileStream,
             crlfDelay: Infinity
         });
 
-        this.currentDeck = [];
+        let deck: Flashcard[] = [];
         let wrongLineNumbers: number[] = [];
         let lineNumber: number = 0;
-        for await (const line of rl) {
+        for await (const line of lines) {
             lineNumber++;
             let qna = line.split(this.separator);
             if (qna.length >= 2) {
-                this.currentDeck.push({
+                deck.push({
                     question: qna[0],
                     answer: qna.slice(1).join(this.separator)
                 });
@@ -284,15 +315,10 @@ export class Flashcards {
             }
         }
 
-        if (wrongLineNumbers.length > 0) {
-            vscode.window.showWarningMessage(`Invalid contents in Deck : "${deckTitle}".  line number : [${wrongLineNumbers.join(', ')}]`);
-        }
-
-        if (this.currentDeck.length === 0) {
-            throw new Error(`Deck : "${deckTitle}" doesn't have any content`);
-        }
-
-        this.currentTitle = deckTitle;
+        return {
+            deck: deck,
+            wrongLineNumbers: wrongLineNumbers
+        };
     }
 
     private async loadTrainingData(deckTitle: string) {

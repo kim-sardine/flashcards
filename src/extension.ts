@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as constants from './constants';
-import * as fs from "fs";
+import Timer from './timer';
 
 import { Flashcards } from './flashcards';
 
@@ -19,17 +19,34 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCommand(context, fcs);
 
 	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-	statusBarItem.text = "Flashcards!";
+	statusBarItem.text = getStatusBarItemText(constants.STATUS_BAR_DEFAULT_TEXT);
 	statusBarItem.tooltip = "Click to start flashcards";
 	statusBarItem.command = constants.CMD_SHOW_START_MODAL;
 	statusBarItem.show();
 	context.subscriptions.push(statusBarItem);
+
+	const timer = new Timer(constants.TIMER_TIME_INTERVAL);
+	timer.onTimeChanged(async () => {
+		let question = await fcs.getRandomQuestion();
+		if (question) {
+			statusBarItem.text = getStatusBarItemText(question);
+		}
+		else {
+			statusBarItem.text = getStatusBarItemText(constants.STATUS_BAR_DEFAULT_TEXT);
+		}
+	});
+
+
+}
+
+function getStatusBarItemText(text: string): string {
+	return `$(symbol-constant) ${text}`;
 }
 
 
 function registerCommand(context: vscode.ExtensionContext, fcs: Flashcards): void {
     context.subscriptions.push(vscode.commands.registerCommand(constants.CMD_SHOW_START_MODAL, () => {
-		vscode.window.showInformationMessage("Please select menu",
+		vscode.window.showInformationMessage("Welcome to Flashcards!",
 			constants.MODAL_MENU_START_FLASHCARD,
 			constants.MODAL_MENU_CREATE_NEW_DECK,
 			constants.MODAL_MENU_UPDATE_DECK,
