@@ -8,16 +8,10 @@ interface Flashcard {
 	answer: string;
 }
 
-interface TraningData {
-	question: string;
-	level: number;
+interface TrainingData {
+	[key: string] : number;
 }
 
-/*
-{
-    "Encoded Question string" : 1~10
-}
-*/
 
 export class Flashcards {
 
@@ -27,7 +21,7 @@ export class Flashcards {
     
     private currentDeck: Flashcard[] = [];
     private currentTitle: string = '';
-    private currentTrainingData: any;
+    private currentTrainingData: TrainingData = {};
 
     constructor(deckRootPath: string, trainingDataRootPath: string) {
         this.deckRootPath = deckRootPath;
