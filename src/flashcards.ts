@@ -32,13 +32,12 @@ export class Flashcards {
     constructor(deckRootPath: string, trainingDataRootPath: string) {
         this.deckRootPath = deckRootPath;
         this.trainingDataRootPath = trainingDataRootPath;
-
+    
         this.init();
-
-        this.updateSeparator();
     }
     
     private init() {
+        this.updateSeparator();
 
         let isFirstInit = false;
         if (!fs.existsSync(this.deckRootPath)){
@@ -53,10 +52,6 @@ export class Flashcards {
         if (isFirstInit) {
             this.createSampleDeck();
         }
-    }
-
-    private createSampleDeck() {
-
     }
 
     public async cmdStartFlashcards() {
@@ -344,19 +339,21 @@ export class Flashcards {
         return deckTitle;
     }
     
-    private createDeck(deckTitle: string) {
+    private createDeck(deckTitle: string, contents: string = '') {
         // Create Deck file
         let newDeckFilePath = this.getDeckFilePath(deckTitle);
         
         if (fs.existsSync(newDeckFilePath)) {
             throw Error(`Flashcard: ${deckTitle} already exists`);
 		}
-        
-        let sampleContents = "13 * 15 ?" + this.separator + "195" + '\n';
-        sampleContents += "You can change separator" + this.separator + "in settings";
+
+        if (!contents) {
+            contents = "13 * 15 ?" + this.separator + "195" + '\n';
+            contents += "You can change separator" + this.separator + "in settings";
+        }
 
         try {
-            fs.writeFileSync(newDeckFilePath, sampleContents);
+            fs.writeFileSync(newDeckFilePath, contents);
         } catch (error) {
             throw Error(`The file "${newDeckFilePath}" couldn't be created: ${error}`);
         }
@@ -395,5 +392,25 @@ export class Flashcards {
         let trainingDataPath = this.getTrainingDataFilePath(deckTitle);
         fs.unlinkSync(trainingDataPath);
 	}
+    
+    private createSampleDeck() {
+        let contents = '';
+        contents += "abase" + this.separator + "(v) To lower in position, estimation, or the like; degrade\n";
+        contents += "abbess" + this.separator + "(n) The lady superior of a nunnery\n";
+        contents += "abbey" + this.separator + "(n) The group of buildings which collectively form the dwelling-place of a society of monks or nuns\n";
+        contents += "abbot" + this.separator + "(n) The superior of a community of monks\n";
+        contents += "abdicate" + this.separator + "(v) To give up (royal power or the like)\n";
+        contents += "abdomen" + this.separator + "(n) In mammals, the visceral cavity between the diaphragm and the pelvic floor; the belly\n";
+        contents += "abdominal" + this.separator + "(n) Of, pertaining to, or situated on the abdomen\n";
+        contents += "abduction" + this.separator + "(n) A carrying away of a person against his will, or illegally\n";
+        contents += "abed" + this.separator + "(adv) In bed; on a bed\n";
+        contents += "aberration" + this.separator + "(n) Deviation from a right, customary, or prescribed course\n";
+        contents += "abet" + this.separator + "(v) To aid, promote, or encourage the commission of (an offense)\n";
+        contents += "abeyance" + this.separator + "(n) A state of suspension or temporary inaction\n";
+        contents += "abhorrence" + this.separator + "(n) The act of detesting extremely\n";
+        contents += "abhorrent" + this.separator + "(adj) Very repugnant; hateful\n";
+
+        this.createDeck("Sample - SAT Vocabulary", contents);
+    }
 
 }
