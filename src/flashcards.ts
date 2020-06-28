@@ -33,9 +33,32 @@ export class Flashcards {
         this.deckRootPath = deckRootPath;
         this.trainingDataRootPath = trainingDataRootPath;
 
+        this.init();
+
         this.updateSeparator();
     }
     
+    private init() {
+
+        let isFirstInit = false;
+        if (!fs.existsSync(this.deckRootPath)){
+            fs.mkdirSync(this.deckRootPath, { recursive: true });
+            isFirstInit = true;
+        }
+        
+        if (!fs.existsSync(this.trainingDataRootPath)){
+            fs.mkdirSync(this.trainingDataRootPath, { recursive: true });
+        }
+
+        if (isFirstInit) {
+            this.createSampleDeck();
+        }
+    }
+
+    private createSampleDeck() {
+
+    }
+
     public async cmdStartFlashcards() {
         try {
             let deckTitle = await this.selectDeck();
@@ -329,7 +352,9 @@ export class Flashcards {
             throw Error(`Flashcard: ${deckTitle} already exists`);
 		}
         
-        let sampleContents = ["First_Question", "First_Answer"].join(this.separator);
+        let sampleContents = "13 * 15 ?" + this.separator + "195" + '\n';
+        sampleContents += "You can change separator" + this.separator + "in settings";
+
         try {
             fs.writeFileSync(newDeckFilePath, sampleContents);
         } catch (error) {

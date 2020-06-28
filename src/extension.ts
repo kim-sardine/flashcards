@@ -14,8 +14,6 @@ export function activate(context: vscode.ExtensionContext) {
 	let deckRootPath = `${context.globalStoragePath}/${constants.DECK_ROOT_DIR_NAME}`;
 	let trainingDataRootPath = `${context.globalStoragePath}/${constants.TRAINING_DATA_ROOT_DIR_NAME}`;
 
-	initExtension(deckRootPath, trainingDataRootPath);
-
 	const fcs = new Flashcards(deckRootPath, trainingDataRootPath);
 
 	registerCommand(context, fcs);
@@ -26,16 +24,6 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.command = constants.CMD_SHOW_START_MODAL;
 	statusBarItem.show();
 	context.subscriptions.push(statusBarItem);
-}
-
-
-function initExtension(deckRootPath: string, trainingDataRootPath: string): void {
-	if (!fs.existsSync(deckRootPath)){
-        fs.mkdirSync(deckRootPath, { recursive: true });
-    }
-    if (!fs.existsSync(trainingDataRootPath)){
-        fs.mkdirSync(trainingDataRootPath, { recursive: true });
-	}
 }
 
 
