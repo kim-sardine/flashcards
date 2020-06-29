@@ -1,5 +1,9 @@
 # Change log
 
+## 0.2.1 (2020.06.29)
+
+1. Change `galleryBanner`
+
 ## 0.2.0 (2020.06.29)
 
 1. Show random flashcards question on `StatusBarItem`

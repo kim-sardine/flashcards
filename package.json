@@ -3,7 +3,7 @@
 	"displayName": "Flashcards",
 	"description": "Study when bored",
 	"icon": "assets/flashcards.png",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"publisher": "kim-sardine",
 	"engines": {
 		"vscode": "^1.46.0"
@@ -25,6 +25,10 @@
 	"bugs": {
 		"url": "https://github.com/kim-sardine/flashcards/issues",
 		"email": "kim-sardine@gmail.com"
+	},
+	"galleryBanner": {
+		"color": "#fff668",
+		"theme": "dark"
 	},
 	"license": "SEE LICENSE IN LICENSE",
 	"activationEvents": [
