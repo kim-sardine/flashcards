@@ -3,7 +3,7 @@
 	"displayName": "Flashcards",
 	"description": "Study when bored",
 	"icon": "assets/flashcards.png",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"publisher": "kim-sardine",
 	"engines": {
 		"vscode": "^1.46.0"
@@ -28,7 +28,7 @@
 	},
 	"galleryBanner": {
 		"color": "#fff668",
-		"theme": "dark"
+		"theme": "light"
 	},
 	"license": "SEE LICENSE IN LICENSE",
 	"activationEvents": [

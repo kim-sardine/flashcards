@@ -1,5 +1,9 @@
 # Change log
 
+## 0.2.2 (2020.06.29)
+
+1. Change `galleryBanner` theme to `light`
+
 ## 0.2.1 (2020.06.29)
 
 1. Change `galleryBanner`
