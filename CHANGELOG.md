@@ -1,5 +1,10 @@
 # Change log
 
-## [Unreleased]
+## 0.2.0 (2020.06.29)
+
+1. Show random flashcards question on `StatusBarItem`
+1. Update README
+
+## 0.1.0 (2020.06.22)
 
 - Initial release

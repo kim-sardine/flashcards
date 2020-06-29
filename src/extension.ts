@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCommand(context, fcs);
 
 	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-	statusBarItem.text = getStatusBarItemText(constants.STATUS_BAR_DEFAULT_TEXT);
+	statusBarItem.text = convertToStatusBarItemText(constants.STATUS_BAR_DEFAULT_TEXT);
 	statusBarItem.tooltip = "Click to start flashcards";
 	statusBarItem.command = constants.CMD_SHOW_START_MODAL;
 	statusBarItem.show();
@@ -29,20 +29,17 @@ export function activate(context: vscode.ExtensionContext) {
 	timer.onTimeChanged(async () => {
 		let question = await fcs.getRandomQuestion();
 		if (question) {
-			statusBarItem.text = getStatusBarItemText(question);
+			statusBarItem.text = convertToStatusBarItemText(question);
 		}
 		else {
-			statusBarItem.text = getStatusBarItemText(constants.STATUS_BAR_DEFAULT_TEXT);
+			statusBarItem.text = convertToStatusBarItemText(constants.STATUS_BAR_DEFAULT_TEXT);
 		}
 	});
-
-
 }
 
-function getStatusBarItemText(text: string): string {
+function convertToStatusBarItemText(text: string): string {
 	return `$(symbol-constant) ${text}`;
 }
-
 
 function registerCommand(context: vscode.ExtensionContext, fcs: Flashcards): void {
     context.subscriptions.push(vscode.commands.registerCommand(constants.CMD_SHOW_START_MODAL, () => {
