@@ -1,9 +1,9 @@
 {
 	"name": "flashcards",
 	"displayName": "Flashcards",
-	"description": "Flashcards will set you free",
+	"description": "Study when bored",
 	"icon": "assets/flashcards.png",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"publisher": "kim-sardine",
 	"engines": {
 		"vscode": "^1.46.0"

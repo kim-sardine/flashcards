@@ -1,6 +1,6 @@
 # Flashcards for Visual Studio Code
 
-Your custom Flashcards on vscode.
+Study when bored.
 
 ![start_flashcards](https://raw.githubusercontent.com/kim-sardine/flashcards/master/assets/start_flashcards.gif)
 
