@@ -414,23 +414,40 @@ export class Flashcards {
 	}
     
     private createSampleDeck() {
-        let contents = '';
-        contents += "abase" + this.separator + "(v) To lower in position, estimation, or the like; degrade\n";
-        contents += "abbess" + this.separator + "(n) The lady superior of a nunnery\n";
-        contents += "abbey" + this.separator + "(n) The group of buildings which collectively form the dwelling-place of a society of monks or nuns\n";
-        contents += "abbot" + this.separator + "(n) The superior of a community of monks\n";
-        contents += "abdicate" + this.separator + "(v) To give up (royal power or the like)\n";
-        contents += "abdomen" + this.separator + "(n) In mammals, the visceral cavity between the diaphragm and the pelvic floor; the belly\n";
-        contents += "abdominal" + this.separator + "(n) Of, pertaining to, or situated on the abdomen\n";
-        contents += "abduction" + this.separator + "(n) A carrying away of a person against his will, or illegally\n";
-        contents += "abed" + this.separator + "(adv) In bed; on a bed\n";
-        contents += "aberration" + this.separator + "(n) Deviation from a right, customary, or prescribed course\n";
-        contents += "abet" + this.separator + "(v) To aid, promote, or encourage the commission of (an offense)\n";
-        contents += "abeyance" + this.separator + "(n) A state of suspension or temporary inaction\n";
-        contents += "abhorrence" + this.separator + "(n) The act of detesting extremely\n";
-        contents += "abhorrent" + this.separator + "(adj) Very repugnant; hateful\n";
+        let satContents = '';
+        satContents += "abase" + this.separator + "(v) To lower in position, estimation, or the like; degrade\n";
+        satContents += "abbess" + this.separator + "(n) The lady superior of a nunnery\n";
+        satContents += "abbey" + this.separator + "(n) The group of buildings which collectively form the dwelling-place of a society of monks or nuns\n";
+        satContents += "abbot" + this.separator + "(n) The superior of a community of monks\n";
+        satContents += "abdicate" + this.separator + "(v) To give up (royal power or the like)\n";
+        satContents += "abdomen" + this.separator + "(n) In mammals, the visceral cavity between the diaphragm and the pelvic floor; the belly\n";
+        satContents += "abdominal" + this.separator + "(n) Of, pertaining to, or situated on the abdomen\n";
+        satContents += "abduction" + this.separator + "(n) A carrying away of a person against his will, or illegally\n";
+        satContents += "abed" + this.separator + "(adv) In bed; on a bed\n";
+        satContents += "aberration" + this.separator + "(n) Deviation from a right, customary, or prescribed course\n";
+        satContents += "abet" + this.separator + "(v) To aid, promote, or encourage the commission of (an offense)\n";
+        satContents += "abeyance" + this.separator + "(n) A state of suspension or temporary inaction\n";
+        satContents += "abhorrence" + this.separator + "(n) The act of detesting extremely\n";
+        satContents += "abhorrent" + this.separator + "(adj) Very repugnant; hateful\n";
+        
+        this.createDeck("Sample - SAT Vocabulary", satContents);
+        
 
-        this.createDeck("Sample - SAT Vocabulary", contents);
+        let csInterviewContents = '';
+        let YOUR_ANSWER = 'Fill in your answer by updating this deck.';
+        csInterviewContents += "(Data structure) Array vs Linked List" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(Data structure) How to find if a linked list has a loop?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(Data structure) What is the difference between the Singly Linked List and Doubly Linked List data structure?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(Data structure) What is a binary search tree?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(Data structure) What is a hash function?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(DB) When to use de-normalization?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(DB) What is a deadlock and How do you prevent it?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(Network) What are the HTTP disadvantages compared to HTTPS?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(Network) What is the difference between HTTP and HTTPS?" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(OS) Process vs Thread" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(OS) Multi process vs Multi thread" + this.separator + YOUR_ANSWER + "\n";
+        csInterviewContents += "(OS) What is cache?" + this.separator + YOUR_ANSWER + "\n";
+
+        this.createDeck("Sample - CS Interview Question", csInterviewContents);
     }
-
 }

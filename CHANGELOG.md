@@ -1,5 +1,9 @@
 # Change log
 
+## 0.2.3 (2020.07.16)
+
+1. Add sample deck `CS Interview Question`
+
 ## 0.2.2 (2020.06.29)
 
 1. Change `galleryBanner` theme to `light`

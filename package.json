@@ -3,7 +3,7 @@
 	"displayName": "Flashcards",
 	"description": "Study when bored",
 	"icon": "assets/flashcards.png",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"publisher": "kim-sardine",
 	"engines": {
 		"vscode": "^1.46.0"
